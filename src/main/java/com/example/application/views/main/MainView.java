@@ -8,25 +8,30 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@PageTitle("Main")
+@PageTitle("Versionsverwaltung")
 @Route(value = "")
 public class MainView extends HorizontalLayout {
 
-    private TextField name;
-    private Button sayHello;
+
 
     public MainView() {
-        name = new TextField("Your name");
-        sayHello = new Button("Say hello");
-        sayHello.addClickListener(e -> {
-            Notification.show("Hello " + name.getValue());
-        });
-        sayHello.addClickShortcut(Key.ENTER);
+        setSizeFull();
+        final TabellenView dateiVersionTabelle = createDateiVersionTabelle();
+        final NewDateiVersionPanel newDateiVersionPanel = createNewDateiVersionPanel();
+        setFlexGrow(2, dateiVersionTabelle);
+        setFlexGrow(1, newDateiVersionPanel);
+        add(dateiVersionTabelle, newDateiVersionPanel);
+    }
 
-        setMargin(true);
-        setVerticalComponentAlignment(Alignment.END, name, sayHello);
+    private TabellenView createDateiVersionTabelle(){
+        final TabellenView dateiVersionTabelle = new TabellenView();
+        return dateiVersionTabelle;
+    }
 
-        add(name, sayHello);
+    private NewDateiVersionPanel createNewDateiVersionPanel(){
+        final NewDateiVersionPanel newDateiVersionPanel = new NewDateiVersionPanel();
+        newDateiVersionPanel.setWidth("25em");
+        return newDateiVersionPanel;
     }
 
 }
