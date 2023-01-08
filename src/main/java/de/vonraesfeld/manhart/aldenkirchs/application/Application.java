@@ -1,10 +1,12 @@
-package com.example.application;
+package de.vonraesfeld.manhart.aldenkirchs.application;
 
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  * The entry point of the Spring Boot application.
@@ -13,9 +15,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * and some desktop browsers.
  *
  */
-@SpringBootApplication
-@Theme(value = "mytodo")
+@SpringBootApplication(scanBasePackages = "de.vonraesfeld.manhart.aldenkirchs.application")
+@Theme(value = "versionsverwaltung")
 @NpmPackage(value = "line-awesome", version = "1.3.0")
+@EnableJpaRepositories("de.vonraesfeld.manhart.aldenkirchs.application.daos")
+@EntityScan("de.vonraesfeld.manhart.aldenkirchs.application.entities")
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {

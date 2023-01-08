@@ -1,4 +1,4 @@
-package com.example.application.views.main.entities;
+package de.vonraesfeld.manhart.aldenkirchs.application.entities;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;

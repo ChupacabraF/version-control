@@ -1,9 +1,11 @@
-package com.example.application.views.main.entities;
+package de.vonraesfeld.manhart.aldenkirchs.application.entities;
 
 import java.util.Date;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "dateiVersion")
 public class DateiVersion extends AbstractEntity{
 
   String dateiname;

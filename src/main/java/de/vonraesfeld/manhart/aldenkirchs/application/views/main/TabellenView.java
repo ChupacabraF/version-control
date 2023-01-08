@@ -1,32 +1,28 @@
-package com.example.application.views.main;
+package de.vonraesfeld.manhart.aldenkirchs.application.views.main;
 
-import com.example.application.views.main.daos.DateiVersionDao;
-import com.example.application.views.main.entities.DateiVersion;
+import de.vonraesfeld.manhart.aldenkirchs.application.daos.DateiVersionDao;
+import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-//@Route(value = "")
-//@PageTitle("Versionsverwaltung")
+@Component
 public class TabellenView extends VerticalLayout {
 
-  @Autowired
-  private DateiVersionDao dateiVersionDao;
   TreeGrid<DateiVersion> grid;
 
 
   public TabellenView() {
-    this.dateiVersionDao = dateiVersionDao;
     setSizeFull();
     grid = new TreeGrid<>(DateiVersion.class);
     grid.setSizeFull();
     configureGrid();
-
     add(getToolbar(), grid);
   }
 
@@ -46,12 +42,18 @@ public class TabellenView extends VerticalLayout {
     filterText.setClearButtonVisible(true);
     //feuert nicht bei jedem Change neue Datenbankabfrage
     filterText.setValueChangeMode(ValueChangeMode.LAZY);
+    // TODO: items über MainView holen?
+//    filterText.addValueChangeListener(e -> updateList());
 
     Button addContactButton = new Button("Datei hinzufügen");
 
     HorizontalLayout toolbar = new HorizontalLayout(filterText, addContactButton);
     toolbar.addClassName("toolbar");
     return toolbar;
+  }
+
+  public void updateList(List<DateiVersion> items) {
+    grid.setItems(items);
   }
 
 
