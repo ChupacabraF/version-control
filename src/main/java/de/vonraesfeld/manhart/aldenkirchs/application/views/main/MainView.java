@@ -1,9 +1,11 @@
 package de.vonraesfeld.manhart.aldenkirchs.application.views.main;
 
 import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.shared.Registration;
 import de.vonraesfeld.manhart.aldenkirchs.application.daos.DateiVersionDao;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +31,6 @@ public class MainView extends HorizontalLayout {
     setFlexGrow(2, dateiVersionTabelle);
     setFlexGrow(1, dateiVersionEditPanel);
     add(dateiVersionTabelle, dateiVersionEditPanel);
-
     closeEditor();
   }
 
@@ -37,6 +38,7 @@ public class MainView extends HorizontalLayout {
     dateiVersionEditPanel.setDateiVersion(null);
     dateiVersionEditPanel.setVisible(false);
     removeClassName("editing");
+    fireEvent(new Events.ClearUploadListEvent(this));
   }
 
   private TabellenView createDateiVersionTabelle() {
@@ -45,31 +47,38 @@ public class MainView extends HorizontalLayout {
   }
 
   private DateiVersionEditPanel createDateiVersionEditPanel() {
-    final DateiVersionEditPanel dateiVersionEditPanel = new DateiVersionEditPanel();
+    final DateiVersionEditPanel dateiVersionEditPanel = new DateiVersionEditPanel(this);
     dateiVersionEditPanel.setWidth("30em");
     dateiVersionEditPanel.addClassName("dateiversionEditPanel");
 
-    dateiVersionEditPanel.addListener(DateiVersionEditPanel.SaveEvent.class,
+    dateiVersionEditPanel.addListener(Events.SaveEvent.class,
         this::saveDateiVersion);
-    dateiVersionEditPanel.addListener(DateiVersionEditPanel.DeleteEvent.class,
+    dateiVersionEditPanel.addListener(Events.DeleteEvent.class,
         this::deleteDateiVersion);
-    dateiVersionEditPanel.addListener(DateiVersionEditPanel.CloseEvent.class, e -> closeEditor());
+    dateiVersionEditPanel.addListener(Events.CloseEvent.class, e -> closeEditor());
     return dateiVersionEditPanel;
   }
 
-  private void deleteDateiVersion(DateiVersionEditPanel.DeleteEvent event) {
+  private void deleteDateiVersion(Events.DeleteEvent event) {
     dateiVersionDao.delete(event.getDateiVersion());
     dateiVersionTabelle.updateList();
     closeEditor();
+    fireEvent(new Events.ClearUploadListEvent(this));
   }
 
-  private void saveDateiVersion(DateiVersionEditPanel.SaveEvent event) {
+  private void saveDateiVersion(Events.SaveEvent event) {
     dateiVersionDao.save(event.getDateiVersion());
     dateiVersionTabelle.updateList();
     closeEditor();
+    fireEvent(new Events.ClearUploadListEvent(this));
   }
 
   public DateiVersionEditPanel getDateiVersionEditPanel() {
     return dateiVersionEditPanel;
+  }
+
+  public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
+                                                                ComponentEventListener<T> listener) {
+    return getEventBus().addListener(eventType, listener);
   }
 }

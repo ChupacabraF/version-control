@@ -6,14 +6,24 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "dateiVersion")
-public class DateiVersion extends AbstractEntity{
+public class DateiVersion extends AbstractEntity {
 
   String dateiname;
-  String inhalt;
+  byte[] file;
   int version;
   Date zuletztBearbeitet;
   Date erstelltAm;
   String kommentar;
+
+  String dateityp;
+
+  public String getDateityp() {
+    return dateityp;
+  }
+
+  public void setDateityp(String dateityp) {
+    this.dateityp = dateityp;
+  }
 
   public String getDateiname() {
     return dateiname;
@@ -23,12 +33,12 @@ public class DateiVersion extends AbstractEntity{
     this.dateiname = dateiname;
   }
 
-  public String getInhalt() {
-    return inhalt;
+  public byte[] getFile() {
+    return file;
   }
 
-  public void setInhalt(String inhalt) {
-    this.inhalt = inhalt;
+  public void setFile(byte[] file) {
+    this.file = file;
   }
 
   public int getVersion() {
