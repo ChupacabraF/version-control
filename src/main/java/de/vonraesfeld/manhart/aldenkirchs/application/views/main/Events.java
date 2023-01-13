@@ -1,6 +1,8 @@
 package de.vonraesfeld.manhart.aldenkirchs.application.views.main;
 
 import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;
 
 public class Events {
@@ -28,8 +30,10 @@ public class Events {
   public static class DeleteEvent extends DateiVersionPanelEvent {
     DeleteEvent(DateiVersionEditPanel source, DateiVersion dateiVersion) {
       super(source, dateiVersion);
+      Notification notification = Notification.show("Datei gelöscht.");
+      notification.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
+      notification.setPosition(Notification.Position.BOTTOM_CENTER);
     }
-
   }
 
   public static class CloseEvent extends DateiVersionPanelEvent {

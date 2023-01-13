@@ -9,6 +9,8 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -136,8 +138,14 @@ public class DateiVersionEditPanel extends FormLayout {
     try {
       binder.writeBean(dateiVersion);
       fireEvent(new Events.SaveEvent(this, dateiVersion));
+      Notification notification = Notification.show("Datei erfolgreich hochgeladen.");
+      notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+      notification.setPosition(Notification.Position.BOTTOM_CENTER);
     } catch (ValidationException e) {
       e.printStackTrace();
+      Notification notification = Notification.show("Hochladen fehlgeschlagen.");
+      notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+      notification.setPosition(Notification.Position.BOTTOM_CENTER);
     }
   }
 
