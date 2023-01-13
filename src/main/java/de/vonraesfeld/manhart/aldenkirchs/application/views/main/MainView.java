@@ -2,7 +2,9 @@ package de.vonraesfeld.manhart.aldenkirchs.application.views.main;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component;
 @PageTitle("Versionsverwaltung")
 @Route(value = "")
 @Component
-public class MainView extends HorizontalLayout {
+public class MainView extends VerticalLayout {
 
   private DateiVersionDao dateiVersionDao;
   private VersionsverwaltungService versionsverwaltungService;
@@ -26,11 +28,19 @@ public class MainView extends HorizontalLayout {
     this.dateiVersionDao = dateiVersionDao;
     this.versionsverwaltungService = versionsverwaltungService;
     setSizeFull();
+    setAlignItems(Alignment.CENTER);
+
+    final HorizontalLayout tableLayout = new HorizontalLayout();
+    tableLayout.setSizeFull();
     dateiVersionTabelle = createDateiVersionTabelle();
     dateiVersionEditPanel = createDateiVersionEditPanel();
     setFlexGrow(2, dateiVersionTabelle);
     setFlexGrow(1, dateiVersionEditPanel);
-    add(dateiVersionTabelle, dateiVersionEditPanel);
+    tableLayout.add(dateiVersionTabelle, dateiVersionEditPanel);
+
+    final H1 ueberschrift = new H1("Versionsverwaltung");
+
+    add(ueberschrift, tableLayout);
     closeEditor();
   }
 

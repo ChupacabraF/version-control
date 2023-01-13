@@ -11,7 +11,9 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializableBiConsumer;
 import de.vonraesfeld.manhart.aldenkirchs.application.daos.DateiVersionDao;
 import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,14 +32,22 @@ public class TabellenView extends VerticalLayout {
     this.mainView = mainView;
     setSizeFull();
     configureGrid();
-    add(getToolbar(), grid);
+    HorizontalLayout toolbar = getToolbar();
+    add(toolbar, grid);
   }
 
   private void configureGrid() {
     grid = new Grid<>(DateiVersion.class, false);
     grid.setSizeFull();
+    grid.setSelectionMode(Grid.SelectionMode.MULTI);
     grid.addClassNames("dateiversion-grid");
-    grid.asSingleSelect().addValueChangeListener(e -> editDateiVersion(e.getValue()));
+    grid.asMultiSelect().addValueChangeListener(e -> {
+      if (e.getValue().size() == 1) {
+        editDateiVersion(e.getValue().iterator().next());
+      } else {
+        mainView.closeEditor();
+      }
+    });
     grid.addColumn(DateiVersion::getDateityp).setHeader("Typ").setWidth("2em").setSortable(true);
     grid.addColumn(DateiVersion::getDateiname).setHeader("Dateiname").setAutoWidth(true)
         .setSortable(true);
@@ -88,10 +98,19 @@ public class TabellenView extends VerticalLayout {
     filterText.addValueChangeListener(
         e -> grid.setItems(versionsverwaltungService.findByDateiname(filterText.getValue())));
 
+    final Button compareDateien = new Button("Vergleichen");
+    compareDateien.addClickListener(e -> {
+      if (grid.getSelectedItems().size() == 2) {
+        List<DateiVersion> ausgewaehlteDateien = new ArrayList<>(grid.getSelectedItems());
+        new CompareDialog(ausgewaehlteDateien.get(0), ausgewaehlteDateien.get(1)).open();
+      }
+    });
+
     final Button addDateiVersionButton = new Button("Datei hinzufügen");
     addDateiVersionButton.addClickListener(e -> addDateiVersion());
 
-    final HorizontalLayout toolbar = new HorizontalLayout(filterText, addDateiVersionButton);
+    final HorizontalLayout toolbar =
+        new HorizontalLayout(filterText, compareDateien, addDateiVersionButton);
     toolbar.setJustifyContentMode(JustifyContentMode.BETWEEN);
     toolbar.setWidthFull();
     toolbar.addClassName("toolbar");
@@ -99,7 +118,7 @@ public class TabellenView extends VerticalLayout {
   }
 
   private void addDateiVersion() {
-    grid.asSingleSelect().clear();
+    grid.asMultiSelect().clear();
     final DateiVersion dateiVersion = new DateiVersion();
     dateiVersion.setErstelltAm(new Date());
     editDateiVersion(dateiVersion);
