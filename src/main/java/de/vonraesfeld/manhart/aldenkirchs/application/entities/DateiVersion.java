@@ -15,7 +15,18 @@ public class DateiVersion extends AbstractEntity {
   Date erstelltAm;
   String kommentar;
 
+
+  Boolean gesperrt = Boolean.FALSE;
+
   String dateityp;
+
+  public Boolean getGesperrt() {
+    return gesperrt;
+  }
+
+  public void setGesperrt(Boolean gesperrt) {
+    this.gesperrt = gesperrt;
+  }
 
   public String getDateityp() {
     return dateityp;

@@ -42,7 +42,8 @@ public class MainView extends HorizontalLayout {
   }
 
   private TabellenView createDateiVersionTabelle() {
-    final TabellenView dateiVersionTabelle = new TabellenView(dateiVersionDao, this);
+    final TabellenView dateiVersionTabelle =
+        new TabellenView(dateiVersionDao, versionsverwaltungService, this);
     return dateiVersionTabelle;
   }
 

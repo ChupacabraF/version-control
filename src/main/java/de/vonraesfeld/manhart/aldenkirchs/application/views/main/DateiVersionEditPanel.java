@@ -6,6 +6,8 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -14,8 +16,11 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.server.InputStreamFactory;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.shared.Registration;
 import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 public class DateiVersionEditPanel extends FormLayout {
@@ -50,8 +55,13 @@ public class DateiVersionEditPanel extends FormLayout {
     });
     mainView.addListener(Events.ClearUploadListEvent.class,
         e -> dateiUpload.clearFileList());
+    dateiUpload.setClassName("dateiUpload");
 
-    add(kommentar, version, dateiUpload, createButtonsLayout());
+    add(kommentar);
+    add(version);
+//    addDownloadLink();
+    add(dateiUpload);
+    add(createButtonsLayout());
   }
 
   private String getFileExtension(String filename) {
@@ -65,6 +75,7 @@ public class DateiVersionEditPanel extends FormLayout {
   public void setDateiVersion(DateiVersion dateiVersion) {
     this.dateiVersion = dateiVersion;
     binder.readBean(dateiVersion);
+    addDownloadLink();
   }
 
   private HorizontalLayout createButtonsLayout() {
@@ -79,7 +90,21 @@ public class DateiVersionEditPanel extends FormLayout {
     delete.addClickListener(event -> fireEvent(new Events.DeleteEvent(this, dateiVersion)));
     close.addClickListener(event -> fireEvent(new Events.CloseEvent(this)));
 
-    return new HorizontalLayout(save, delete, close);
+    HorizontalLayout hl = new HorizontalLayout(save, delete, close);
+    hl.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+    return hl;
+  }
+
+  private void addDownloadLink() {
+    if (dateiVersion != null && dateiVersion.getFile() != null &&
+        dateiVersion.getDateiname() != null) {
+      StreamResource streamResource = new StreamResource(dateiVersion.getDateiname(),
+          (InputStreamFactory) () -> new ByteArrayInputStream(dateiVersion.getFile()));
+      Anchor link = new Anchor(streamResource,
+          String.format("%s (%d KB)", dateiVersion.getDateiname(),
+              dateiVersion.getFile().length / 1024));
+      link.getElement().setAttribute("download", true);
+    }
   }
 
   private void validateAndSave() {
