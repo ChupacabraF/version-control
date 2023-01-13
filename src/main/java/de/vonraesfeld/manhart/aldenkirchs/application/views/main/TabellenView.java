@@ -43,6 +43,8 @@ public class TabellenView extends VerticalLayout {
         .setSortable(true);
     grid.addColumn(DateiVersion::getVersion).setHeader("Version").setWidth("2em").setSortable(true);
     grid.addColumn(createGesperrtSpalte()).setHeader("Status").setAutoWidth(true).setSortable(true);
+    grid.addColumn(DateiVersion::getKommentar).setHeader("Kommentar").setAutoWidth(true)
+        .setSortable(false);
     grid.addColumn(DateiVersion::getZuletztBearbeitet).setHeader("Zuletzt Bearbeitet")
         .setAutoWidth(true).setSortable(true);
     grid.addColumn(DateiVersion::getErstelltAm).setHeader("Erstellt am").setAutoWidth(true)
@@ -59,9 +61,9 @@ public class TabellenView extends VerticalLayout {
       span, dateiVersion) -> {
     Boolean gesperrt = dateiVersion.getGesperrt();
     String theme = String.format("badge %s",
-        Boolean.FALSE.equals(gesperrt) ? "error" : "success");
+        Boolean.TRUE.equals(gesperrt) ? "error" : "success");
     span.getElement().setAttribute("theme", theme);
-    span.setText(Boolean.FALSE.equals(gesperrt) ? "Gesperrt" : "Verfügbar");
+    span.setText(Boolean.TRUE.equals(gesperrt) ? "Gesperrt" : "Verfügbar");
   };
 
   private void editDateiVersion(DateiVersion value) {

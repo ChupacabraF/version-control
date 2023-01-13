@@ -5,8 +5,10 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -21,34 +23,58 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.shared.Registration;
 import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import org.apache.commons.io.IOUtils;
 
 public class DateiVersionEditPanel extends FormLayout {
 
+  private final MainView mainView;
   private Button save = new Button("Speichern");
   private Button delete = new Button("Löschen");
   private Button close = new Button("Abbrechen");
   private Upload dateiUpload;
+  private Anchor downloadLink = new Anchor("", "");
   private TextField kommentar = new TextField("Kommentar");
   private IntegerField version = new IntegerField("Version");
+
+  private Checkbox gesperrt = new Checkbox("Datei für Änderungen gesperrt?");
+  private Label downloadLinkLabel = new Label("Downloadlink:");
+
 
   private DateiVersion dateiVersion;
 
   Binder<DateiVersion> binder = new BeanValidationBinder<>(DateiVersion.class);
 
   public DateiVersionEditPanel(MainView mainView) {
+    this.mainView = mainView;
     binder.bindInstanceFields(this);
+    binder.bind(gesperrt, DateiVersion::getGesperrt, DateiVersion::setGesperrt);
 
+    //Inputfelder erstellen bzw. konfigurieren
+    createDateiUploadFeld();
+    gesperrt.setClassName("gesperrt");
+    version.setStepButtonsVisible(true);
+    //TODO: keine Ahnung warum das nicht funktioniert
+    version.setWidth("7em");
+    downloadLinkLabel.setVisible(false);
+
+    add(kommentar);
+    add(version);
+    add(gesperrt);
+    add(downloadLinkLabel);
+    add(downloadLink);
+    add(dateiUpload);
+    add(createButtonsLayout());
+  }
+
+  private void createDateiUploadFeld() {
     final MemoryBuffer memoryBuffer = new MemoryBuffer();
     dateiUpload = new Upload(memoryBuffer);
     dateiUpload.addSucceededListener(event -> {
       dateiVersion.setDateiname(memoryBuffer.getFileName());
       dateiVersion.setDateityp(getFileExtension(memoryBuffer.getFileName()));
       try {
-        ByteArrayOutputStream outputStream =
-            (ByteArrayOutputStream) memoryBuffer.receiveUpload(memoryBuffer.getFileName(),
-                memoryBuffer.getFileData().getMimeType());
-        dateiVersion.setFile(outputStream.toByteArray());
+        byte[] bytes = IOUtils.toByteArray(memoryBuffer.getInputStream());
+        dateiVersion.setFile(bytes);
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -56,12 +82,6 @@ public class DateiVersionEditPanel extends FormLayout {
     mainView.addListener(Events.ClearUploadListEvent.class,
         e -> dateiUpload.clearFileList());
     dateiUpload.setClassName("dateiUpload");
-
-    add(kommentar);
-    add(version);
-//    addDownloadLink();
-    add(dateiUpload);
-    add(createButtonsLayout());
   }
 
   private String getFileExtension(String filename) {
@@ -100,10 +120,15 @@ public class DateiVersionEditPanel extends FormLayout {
         dateiVersion.getDateiname() != null) {
       StreamResource streamResource = new StreamResource(dateiVersion.getDateiname(),
           (InputStreamFactory) () -> new ByteArrayInputStream(dateiVersion.getFile()));
-      Anchor link = new Anchor(streamResource,
-          String.format("%s (%d KB)", dateiVersion.getDateiname(),
-              dateiVersion.getFile().length / 1024));
-      link.getElement().setAttribute("download", true);
+      downloadLink.setHref(streamResource);
+      downloadLink.setText(String.format("%s (%d KB)", dateiVersion.getDateiname(),
+          dateiVersion.getFile().length / 1024));
+      downloadLink.getElement().setAttribute("download", true);
+      downloadLinkLabel.setVisible(true);
+    } else {
+      downloadLink.setText("");
+      downloadLink.setHref("");
+      downloadLinkLabel.setVisible(false);
     }
   }
 

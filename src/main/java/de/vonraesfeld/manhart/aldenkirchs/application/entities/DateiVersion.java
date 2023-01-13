@@ -2,6 +2,7 @@ package de.vonraesfeld.manhart.aldenkirchs.application.entities;
 
 import java.util.Date;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 @Entity
@@ -9,6 +10,7 @@ import javax.persistence.Table;
 public class DateiVersion extends AbstractEntity {
 
   String dateiname;
+  @Lob
   byte[] file;
   int version;
   Date zuletztBearbeitet;
