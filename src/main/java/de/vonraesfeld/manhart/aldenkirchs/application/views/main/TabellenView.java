@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializableBiConsumer;
@@ -22,7 +23,7 @@ public class TabellenView extends VerticalLayout {
   private final DateiVersionDao dateiVersionDao;
   private final VersionsverwaltungService versionsverwaltungService;
   private final MainView mainView;
-  Grid<DateiVersion> grid;
+  TreeGrid<DateiVersion> grid;
 
 
   public TabellenView(DateiVersionDao dateiVersionDao,
@@ -37,7 +38,7 @@ public class TabellenView extends VerticalLayout {
   }
 
   private void configureGrid() {
-    grid = new Grid<>(DateiVersion.class, false);
+    grid = new TreeGrid<>();
     grid.setSizeFull();
     grid.setSelectionMode(Grid.SelectionMode.MULTI);
     grid.addClassNames("dateiversion-grid");
@@ -49,7 +50,7 @@ public class TabellenView extends VerticalLayout {
       }
     });
     grid.addColumn(DateiVersion::getDateityp).setHeader("Typ").setWidth("2em").setSortable(true);
-    grid.addColumn(DateiVersion::getDateiname).setHeader("Dateiname").setAutoWidth(true)
+    grid.addHierarchyColumn(DateiVersion::getDateiname).setHeader("Dateiname").setAutoWidth(true)
         .setSortable(true);
     grid.addColumn(DateiVersion::getVersion).setHeader("Version").setWidth("2em").setSortable(true);
     grid.addColumn(createGesperrtSpalte()).setHeader("Status").setAutoWidth(true).setSortable(true);
@@ -125,7 +126,12 @@ public class TabellenView extends VerticalLayout {
   }
 
   public void updateList() {
-    grid.setItems(dateiVersionDao.findAll());
+    grid.getTreeData().clear();
+    for (DateiVersion root : versionsverwaltungService.findAllRootDateien()) {
+      grid.getTreeData().addItem(null, root);
+      grid.getTreeData()
+          .addItems(root, versionsverwaltungService.findAllChildDateien(root.getDateiname()));
+    }
   }
 
 
