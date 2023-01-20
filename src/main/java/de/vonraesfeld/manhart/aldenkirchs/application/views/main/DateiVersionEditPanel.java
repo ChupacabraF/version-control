@@ -24,6 +24,7 @@ import com.vaadin.flow.server.InputStreamFactory;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.shared.Registration;
 import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;
+import de.vonraesfeld.manhart.aldenkirchs.application.service.VersionsverwaltungService;
 import java.io.ByteArrayInputStream;
 import org.apache.commons.io.IOUtils;
 
@@ -31,24 +32,24 @@ public class DateiVersionEditPanel extends FormLayout {
 
   private final MainView mainView;
   private final VersionsverwaltungService versionsverwaltungService;
-  private Button save = new Button("Speichern");
-  private Button delete = new Button("Löschen");
-  private Button close = new Button("Abbrechen");
+  private final Button save = new Button("Speichern");
+  private final Button delete = new Button("Löschen");
+  private final Button close = new Button("Abbrechen");
   private Upload dateiUpload;
-  private Anchor downloadLink = new Anchor("", "");
-  private TextField kommentar = new TextField("Kommentar");
-  private IntegerField version = new IntegerField("Version");
+  private final Anchor downloadLink = new Anchor("", "");
+  private final TextField kommentar = new TextField("Kommentar");
+  private final IntegerField version = new IntegerField("Version");
 
-  private Checkbox gesperrt = new Checkbox("Datei für Änderungen gesperrt?");
-  private Label downloadLinkLabel = new Label("Downloadlink:");
+  private final Checkbox gesperrt = new Checkbox("Datei für Änderungen gesperrt?");
+  private final Label downloadLinkLabel = new Label("Downloadlink:");
 
 
   private DateiVersion dateiVersion;
 
   Binder<DateiVersion> binder = new BeanValidationBinder<>(DateiVersion.class);
 
-  public DateiVersionEditPanel(MainView mainView,
-                               VersionsverwaltungService versionsverwaltungService) {
+  public DateiVersionEditPanel(final MainView mainView,
+      final VersionsverwaltungService versionsverwaltungService) {
     this.mainView = mainView;
     this.versionsverwaltungService = versionsverwaltungService;
     binder.bindInstanceFields(this);
@@ -79,9 +80,9 @@ public class DateiVersionEditPanel extends FormLayout {
       dateiVersion.setDateiname(fileName);
       dateiVersion.setDateityp(getFileExtension(fileName));
       try {
-        byte[] bytes = IOUtils.toByteArray(memoryBuffer.getInputStream());
+        final byte[] bytes = IOUtils.toByteArray(memoryBuffer.getInputStream());
         dateiVersion.setFile(bytes);
-      } catch (Exception e) {
+      } catch (final Exception e) {
         e.printStackTrace();
       }
       if (!versionsverwaltungService.findAllRootDateien(fileName).isEmpty()) {
@@ -93,15 +94,15 @@ public class DateiVersionEditPanel extends FormLayout {
     dateiUpload.setClassName("dateiUpload");
   }
 
-  private String getFileExtension(String filename) {
-    int lastIndexOf = filename.lastIndexOf(".");
+  private String getFileExtension(final String filename) {
+    final int lastIndexOf = filename.lastIndexOf(".");
     if (lastIndexOf == -1) {
       return ""; // empty extension
     }
     return filename.substring(lastIndexOf + 1);
   }
 
-  public void setDateiVersion(DateiVersion dateiVersion) {
+  public void setDateiVersion(final DateiVersion dateiVersion) {
     this.dateiVersion = dateiVersion;
     binder.readBean(dateiVersion);
     addDownloadLink();
@@ -119,7 +120,7 @@ public class DateiVersionEditPanel extends FormLayout {
     delete.addClickListener(event -> fireEvent(new Events.DeleteEvent(this, dateiVersion)));
     close.addClickListener(event -> fireEvent(new Events.CloseEvent(this)));
 
-    HorizontalLayout hl = new HorizontalLayout(save, delete, close);
+    final HorizontalLayout hl = new HorizontalLayout(save, delete, close);
     hl.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
     return hl;
   }
@@ -127,7 +128,7 @@ public class DateiVersionEditPanel extends FormLayout {
   private void addDownloadLink() {
     if (dateiVersion != null && dateiVersion.getFile() != null &&
         dateiVersion.getDateiname() != null) {
-      StreamResource streamResource = new StreamResource(dateiVersion.getDateiname(),
+      final StreamResource streamResource = new StreamResource(dateiVersion.getDateiname(),
           (InputStreamFactory) () -> new ByteArrayInputStream(dateiVersion.getFile()));
       downloadLink.setHref(streamResource);
       downloadLink.setText(String.format("%s (%d KB)", dateiVersion.getDateiname(),
@@ -145,19 +146,19 @@ public class DateiVersionEditPanel extends FormLayout {
     try {
       binder.writeBean(dateiVersion);
       fireEvent(new Events.SaveEvent(this, dateiVersion));
-      Notification notification = Notification.show("Datei erfolgreich hochgeladen.");
+      final Notification notification = Notification.show("Datei erfolgreich hochgeladen.");
       notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
       notification.setPosition(Notification.Position.BOTTOM_CENTER);
-    } catch (ValidationException e) {
+    } catch (final ValidationException e) {
       e.printStackTrace();
-      Notification notification = Notification.show("Hochladen fehlgeschlagen.");
+      final Notification notification = Notification.show("Hochladen fehlgeschlagen.");
       notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
       notification.setPosition(Notification.Position.BOTTOM_CENTER);
     }
   }
 
-  public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-                                                                ComponentEventListener<T> listener) {
+  public <T extends ComponentEvent<?>> Registration addListener(final Class<T> eventType,
+      final ComponentEventListener<T> listener) {
     return getEventBus().addListener(eventType, listener);
   }
 

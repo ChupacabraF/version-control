@@ -1,4 +1,4 @@
-package de.vonraesfeld.manhart.aldenkirchs.application.views.main;
+package de.vonraesfeld.manhart.aldenkirchs.application.service;
 
 import de.vonraesfeld.manhart.aldenkirchs.application.daos.DateiVersionDao;
 import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;

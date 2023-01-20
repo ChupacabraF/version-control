@@ -9,6 +9,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
 import de.vonraesfeld.manhart.aldenkirchs.application.daos.DateiVersionDao;
+import de.vonraesfeld.manhart.aldenkirchs.application.service.VersionsverwaltungService;
 import org.springframework.stereotype.Component;
 
 @PageTitle("Versionsverwaltung")
@@ -16,15 +17,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class MainView extends VerticalLayout {
 
-  private DateiVersionDao dateiVersionDao;
-  private VersionsverwaltungService versionsverwaltungService;
+  private final DateiVersionDao dateiVersionDao;
+  private final VersionsverwaltungService versionsverwaltungService;
 
   private final TabellenView dateiVersionTabelle;
   private final DateiVersionEditPanel dateiVersionEditPanel;
 
 
-  public MainView(DateiVersionDao dateiVersionDao,
-                  VersionsverwaltungService versionsverwaltungService) {
+  public MainView(final DateiVersionDao dateiVersionDao,
+      final VersionsverwaltungService versionsverwaltungService) {
     this.dateiVersionDao = dateiVersionDao;
     this.versionsverwaltungService = versionsverwaltungService;
     setSizeFull();
@@ -71,14 +72,14 @@ public class MainView extends VerticalLayout {
     return dateiVersionEditPanel;
   }
 
-  private void deleteDateiVersion(Events.DeleteEvent event) {
+  private void deleteDateiVersion(final Events.DeleteEvent event) {
     dateiVersionDao.delete(event.getDateiVersion());
     dateiVersionTabelle.updateList(null);
     closeEditor();
     fireEvent(new Events.ClearUploadListEvent(this));
   }
 
-  private void saveDateiVersion(Events.SaveEvent event) {
+  private void saveDateiVersion(final Events.SaveEvent event) {
     dateiVersionDao.save(event.getDateiVersion());
     dateiVersionTabelle.updateList(null);
     closeEditor();
@@ -89,8 +90,8 @@ public class MainView extends VerticalLayout {
     return dateiVersionEditPanel;
   }
 
-  public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-                                                                ComponentEventListener<T> listener) {
+  public <T extends ComponentEvent<?>> Registration addListener(final Class<T> eventType,
+      final ComponentEventListener<T> listener) {
     return getEventBus().addListener(eventType, listener);
   }
 }
