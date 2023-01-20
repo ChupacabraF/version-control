@@ -16,17 +16,31 @@ public class DateiVersion extends AbstractEntity {
   Date zuletztBearbeitet;
   Date erstelltAm;
   String kommentar;
-
-
   Boolean gesperrt = Boolean.FALSE;
-
   String dateityp;
+
+  public DateiVersion(final String dateiname, final byte[] file, final int version,
+      final Date zuletztBearbeitet, final Date erstelltAm, final String kommentar,
+      final Boolean gesperrt, final String dateityp) {
+    this.dateiname = dateiname;
+    this.file = file;
+    this.version = version;
+    this.zuletztBearbeitet = zuletztBearbeitet;
+    this.erstelltAm = erstelltAm;
+    this.kommentar = kommentar;
+    this.gesperrt = gesperrt;
+    this.dateityp = dateityp;
+  }
+
+  public DateiVersion() {
+
+  }
 
   public Boolean getGesperrt() {
     return gesperrt;
   }
 
-  public void setGesperrt(Boolean gesperrt) {
+  public void setGesperrt(final Boolean gesperrt) {
     this.gesperrt = gesperrt;
   }
 
@@ -34,7 +48,7 @@ public class DateiVersion extends AbstractEntity {
     return dateityp;
   }
 
-  public void setDateityp(String dateityp) {
+  public void setDateityp(final String dateityp) {
     this.dateityp = dateityp;
   }
 
@@ -42,7 +56,7 @@ public class DateiVersion extends AbstractEntity {
     return dateiname;
   }
 
-  public void setDateiname(String dateiname) {
+  public void setDateiname(final String dateiname) {
     this.dateiname = dateiname;
   }
 
@@ -50,7 +64,7 @@ public class DateiVersion extends AbstractEntity {
     return file;
   }
 
-  public void setFile(byte[] file) {
+  public void setFile(final byte[] file) {
     this.file = file;
   }
 
@@ -58,7 +72,7 @@ public class DateiVersion extends AbstractEntity {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(final int version) {
     this.version = version;
   }
 
@@ -66,7 +80,7 @@ public class DateiVersion extends AbstractEntity {
     return zuletztBearbeitet;
   }
 
-  public void setZuletztBearbeitet(Date zuletztBearbeitet) {
+  public void setZuletztBearbeitet(final Date zuletztBearbeitet) {
     this.zuletztBearbeitet = zuletztBearbeitet;
   }
 
@@ -74,7 +88,7 @@ public class DateiVersion extends AbstractEntity {
     return erstelltAm;
   }
 
-  public void setErstelltAm(Date erstelltAm) {
+  public void setErstelltAm(final Date erstelltAm) {
     this.erstelltAm = erstelltAm;
   }
 
@@ -82,7 +96,7 @@ public class DateiVersion extends AbstractEntity {
     return kommentar;
   }
 
-  public void setKommentar(String kommentar) {
+  public void setKommentar(final String kommentar) {
     this.kommentar = kommentar;
   }
 }
