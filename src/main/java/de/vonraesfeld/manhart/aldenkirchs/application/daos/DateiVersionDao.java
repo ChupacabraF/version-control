@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DateiVersionDao extends JpaRepository<DateiVersion, Integer> {
 
+
 }

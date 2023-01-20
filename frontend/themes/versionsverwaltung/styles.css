@@ -21,3 +21,21 @@
 .gesperrt {
     margin-top: 1em;
 }
+
+.paddingTopNull {
+    padding-top: 0;
+}
+
+.textareaDelete {
+    background-color: #fae2e5;
+    border-color: red;
+    border-radius: 4px;
+    padding: 0;
+}
+
+.textareaNew {
+    background-color: #e6fae2;
+    border-color: green;
+    border-radius: 4px;
+    padding: 0;
+}

@@ -2,6 +2,8 @@ package de.vonraesfeld.manhart.aldenkirchs.application.views.main;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -49,7 +51,25 @@ public class TabellenView extends VerticalLayout {
         mainView.closeEditor();
       }
     });
-    grid.addColumn(DateiVersion::getDateityp).setHeader("Typ").setWidth("2em").setSortable(true);
+    grid.addComponentColumn(dateiVersion -> {
+      final Image image = new Image();
+      image.setWidth("30px");
+      image.setHeight("30px");
+      if ("txt".equals(dateiVersion.getDateityp())) {
+        image.setSrc("txt_icon.svg");
+        image.setAlt("txt");
+        return image;
+      } else if ("pdf".equals(dateiVersion.getDateityp())) {
+        image.setSrc("pdf_icon.svg");
+        image.setAlt("pdf");
+        return image;
+      } else if ("json".equals(dateiVersion.getDateityp())) {
+        image.setSrc("json_icon.png");
+        image.setAlt("json");
+        return image;
+      }
+      return new Label(dateiVersion.getDateityp());
+    }).setHeader("Typ").setWidth("50px").setAutoWidth(false).setSortable(true);
     grid.addHierarchyColumn(DateiVersion::getDateiname).setHeader("Dateiname").setAutoWidth(true)
         .setSortable(true);
     grid.addColumn(DateiVersion::getVersion).setHeader("Version").setWidth("2em").setSortable(true);
@@ -61,7 +81,7 @@ public class TabellenView extends VerticalLayout {
     grid.addColumn(DateiVersion::getErstelltAm).setHeader("Erstellt am").setAutoWidth(true)
         .setSortable(true);
     grid.getColumns().forEach(col -> col.setAutoWidth(true));
-    updateList();
+    updateList(null);
   }
 
   private ComponentRenderer<Span, DateiVersion> createGesperrtSpalte() {
@@ -97,7 +117,7 @@ public class TabellenView extends VerticalLayout {
     //feuert nicht bei jedem Change neue Datenbankabfrage
     filterText.setValueChangeMode(ValueChangeMode.LAZY);
     filterText.addValueChangeListener(
-        e -> grid.setItems(versionsverwaltungService.findByDateiname(filterText.getValue())));
+        e -> updateList(filterText.getValue()));
 
     final Button compareDateien = new Button("Vergleichen");
     compareDateien.addClickListener(e -> {
@@ -125,13 +145,14 @@ public class TabellenView extends VerticalLayout {
     editDateiVersion(dateiVersion);
   }
 
-  public void updateList() {
+  public void updateList(final String searchTerm) {
     grid.getTreeData().clear();
-    for (DateiVersion root : versionsverwaltungService.findAllRootDateien()) {
+    for (DateiVersion root : versionsverwaltungService.findAllRootDateien(searchTerm)) {
       grid.getTreeData().addItem(null, root);
       grid.getTreeData()
           .addItems(root, versionsverwaltungService.findAllChildDateien(root.getDateiname()));
     }
+    grid.getDataProvider().refreshAll();
   }
 
 

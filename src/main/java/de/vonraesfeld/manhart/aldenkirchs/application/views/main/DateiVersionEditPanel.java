@@ -30,6 +30,7 @@ import org.apache.commons.io.IOUtils;
 public class DateiVersionEditPanel extends FormLayout {
 
   private final MainView mainView;
+  private final VersionsverwaltungService versionsverwaltungService;
   private Button save = new Button("Speichern");
   private Button delete = new Button("Löschen");
   private Button close = new Button("Abbrechen");
@@ -46,8 +47,10 @@ public class DateiVersionEditPanel extends FormLayout {
 
   Binder<DateiVersion> binder = new BeanValidationBinder<>(DateiVersion.class);
 
-  public DateiVersionEditPanel(MainView mainView) {
+  public DateiVersionEditPanel(MainView mainView,
+                               VersionsverwaltungService versionsverwaltungService) {
     this.mainView = mainView;
+    this.versionsverwaltungService = versionsverwaltungService;
     binder.bindInstanceFields(this);
     binder.bind(gesperrt, DateiVersion::getGesperrt, DateiVersion::setGesperrt);
 
@@ -72,13 +75,17 @@ public class DateiVersionEditPanel extends FormLayout {
     final MemoryBuffer memoryBuffer = new MemoryBuffer();
     dateiUpload = new Upload(memoryBuffer);
     dateiUpload.addSucceededListener(event -> {
-      dateiVersion.setDateiname(memoryBuffer.getFileName());
-      dateiVersion.setDateityp(getFileExtension(memoryBuffer.getFileName()));
+      final String fileName = memoryBuffer.getFileName();
+      dateiVersion.setDateiname(fileName);
+      dateiVersion.setDateityp(getFileExtension(fileName));
       try {
         byte[] bytes = IOUtils.toByteArray(memoryBuffer.getInputStream());
         dateiVersion.setFile(bytes);
       } catch (Exception e) {
         e.printStackTrace();
+      }
+      if (!versionsverwaltungService.findAllRootDateien(fileName).isEmpty()) {
+        version.setValue(versionsverwaltungService.findHoechsteVersionFuerDateiname(fileName) + 1);
       }
     });
     mainView.addListener(Events.ClearUploadListEvent.class,

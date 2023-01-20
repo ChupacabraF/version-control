@@ -3,9 +3,12 @@ package de.vonraesfeld.manhart.aldenkirchs.application.views.main;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
+import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 
 public class CompareDialog extends Dialog {
 
@@ -20,21 +23,53 @@ public class CompareDialog extends Dialog {
     add(mainLayout);
   }
 
-  private static HorizontalLayout getLayout(DateiVersion linkeDatei,
-                                            DateiVersion rechteDatei) {
+  private HorizontalLayout getLayout(DateiVersion linkeDatei,
+                                     DateiVersion rechteDatei) {
     final HorizontalLayout mainLayout = new HorizontalLayout();
     mainLayout.setWidthFull();
+    String stringLinks = new String(linkeDatei.getFile(), StandardCharsets.UTF_8);
+    String stringRechts = new String(rechteDatei.getFile(), StandardCharsets.UTF_8);
+
+    final VerticalLayout diffLayout = new VerticalLayout();
+    diffLayout.setWidth("50%");
+    diffLayout.setSpacing(false);
+    DiffMatchPatch diffMatchPatch = new DiffMatchPatch();
+    LinkedList<DiffMatchPatch.Diff> diffs = diffMatchPatch.diffMain(stringLinks, stringRechts);
+    boolean ersteTextbox = true;
+    for (DiffMatchPatch.Diff diff : diffs) {
+      final TextArea textArea = new TextArea();
+      textArea.setReadOnly(true);
+      textArea.setWidth("100%");
+      textArea.setValue(diff.text);
+      if (ersteTextbox) {
+        textArea.setLabel("Version " + rechteDatei.getVersion() + ":");
+        textArea.addClassName("paddingTopNull");
+        ersteTextbox = false;
+      }
+
+      if (DiffMatchPatch.Operation.DELETE.equals(diff.operation)) {
+        textArea.addClassName("textareaDelete");
+      }
+      if (DiffMatchPatch.Operation.INSERT.equals(diff.operation)) {
+        textArea.addClassName("textareaNew");
+      }
+      diffLayout.add(textArea);
+    }
+
+
     final TextArea linkeTa = new TextArea();
     linkeTa.setReadOnly(true);
-    linkeTa.setLabel("Linke Datei");
+    linkeTa.setLabel("Version " + linkeDatei.getVersion() + ":");
     linkeTa.setWidth("50%");
     linkeTa.setValue(new String(linkeDatei.getFile(), StandardCharsets.UTF_8));
-    final TextArea rechteTa = new TextArea();
-    rechteTa.setLabel("Rechte Datei");
-    rechteTa.setReadOnly(true);
-    rechteTa.setWidth("50%");
-    rechteTa.setValue(new String(rechteDatei.getFile(), StandardCharsets.UTF_8));
-    mainLayout.add(linkeTa, rechteTa);
+
+    mainLayout.add(linkeTa, diffLayout);
+//    final TextArea rechteTa = new TextArea();
+//    rechteTa.setLabel("Rechte Datei");
+//    rechteTa.setReadOnly(true);
+//    rechteTa.setWidth("50%");
+//    rechteTa.setValue(new String(rechteDatei.getFile(), StandardCharsets.UTF_8));
+//    mainLayout.add(linkeTa, rechteTa);
     return mainLayout;
   }
 }

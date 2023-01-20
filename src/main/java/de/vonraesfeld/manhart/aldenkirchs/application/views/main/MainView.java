@@ -58,7 +58,8 @@ public class MainView extends VerticalLayout {
   }
 
   private DateiVersionEditPanel createDateiVersionEditPanel() {
-    final DateiVersionEditPanel dateiVersionEditPanel = new DateiVersionEditPanel(this);
+    final DateiVersionEditPanel dateiVersionEditPanel =
+        new DateiVersionEditPanel(this, versionsverwaltungService);
     dateiVersionEditPanel.setWidth("30em");
     dateiVersionEditPanel.addClassName("dateiversionEditPanel");
 
@@ -72,14 +73,14 @@ public class MainView extends VerticalLayout {
 
   private void deleteDateiVersion(Events.DeleteEvent event) {
     dateiVersionDao.delete(event.getDateiVersion());
-    dateiVersionTabelle.updateList();
+    dateiVersionTabelle.updateList(null);
     closeEditor();
     fireEvent(new Events.ClearUploadListEvent(this));
   }
 
   private void saveDateiVersion(Events.SaveEvent event) {
     dateiVersionDao.save(event.getDateiVersion());
-    dateiVersionTabelle.updateList();
+    dateiVersionTabelle.updateList(null);
     closeEditor();
     fireEvent(new Events.ClearUploadListEvent(this));
   }
