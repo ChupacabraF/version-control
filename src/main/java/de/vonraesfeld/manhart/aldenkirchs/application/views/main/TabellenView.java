@@ -56,18 +56,26 @@ public class TabellenView extends VerticalLayout {
       image.setWidth("30px");
       image.setHeight("30px");
       if ("txt".equals(dateiVersion.getDateityp())) {
-        image.setSrc("txt_icon.svg");
+        image.setSrc("txt_file.png");
         image.setAlt("txt");
         return image;
       } else if ("pdf".equals(dateiVersion.getDateityp())) {
-        image.setSrc("pdf_icon.svg");
+        image.setSrc("pdf_file.png");
         image.setAlt("pdf");
         return image;
       } else if ("json".equals(dateiVersion.getDateityp())) {
-        image.setSrc("json_icon.png");
+        image.setSrc("json_file.png");
         image.setAlt("json");
         return image;
-      }
+      } else if ("java".equals(dateiVersion.getDateityp())) {
+        image.setSrc("java_file.png");
+        image.setAlt("java");
+        return image;
+    } else if ("xml".equals(dateiVersion.getDateityp())) {
+        image.setSrc("xml_file.png");
+        image.setAlt("xml");
+        return image;
+    }
       return new Label(dateiVersion.getDateityp());
     }).setHeader("Typ").setWidth("50px").setAutoWidth(false).setSortable(true);
     grid.addHierarchyColumn(DateiVersion::getDateiname).setHeader("Dateiname").setAutoWidth(true)
