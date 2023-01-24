@@ -51,8 +51,17 @@ public class VersionsverwaltungService {
     if (CollectionUtils.isEmpty(alle) || StringUtils.isBlank(dateiname)) {
       return 0;
     }
-
     return alle.stream().filter(dateiVersion -> dateiname.equals(dateiVersion.getDateiname()))
         .max(Comparator.comparingInt(DateiVersion::getVersion)).get().getVersion();
   }
+
+  public DateiVersion saveDateiVersion(final DateiVersion dateiVersion) {
+    return dateiVersionDao.save(dateiVersion);
+  }
+
+  public void deleteDateiVersion(final DateiVersion dateiVersion) {
+    dateiVersionDao.delete(dateiVersion);
+  }
+
+
 }

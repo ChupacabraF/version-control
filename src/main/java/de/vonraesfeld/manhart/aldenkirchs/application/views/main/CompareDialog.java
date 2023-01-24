@@ -64,12 +64,6 @@ public class CompareDialog extends Dialog {
     linkeTa.setValue(new String(linkeDatei.getFile(), StandardCharsets.UTF_8));
 
     mainLayout.add(linkeTa, diffLayout);
-//    final TextArea rechteTa = new TextArea();
-//    rechteTa.setLabel("Rechte Datei");
-//    rechteTa.setReadOnly(true);
-//    rechteTa.setWidth("50%");
-//    rechteTa.setValue(new String(rechteDatei.getFile(), StandardCharsets.UTF_8));
-//    mainLayout.add(linkeTa, rechteTa);
     return mainLayout;
   }
 }

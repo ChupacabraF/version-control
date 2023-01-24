@@ -12,29 +12,27 @@ import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializableBiConsumer;
-import de.vonraesfeld.manhart.aldenkirchs.application.daos.DateiVersionDao;
+import com.vaadin.flow.spring.annotation.UIScope;
 import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;
+import de.vonraesfeld.manhart.aldenkirchs.application.service.VersionsverwaltungService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import de.vonraesfeld.manhart.aldenkirchs.application.service.VersionsverwaltungService;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 @Component
+@UIScope
 public class TabellenView extends VerticalLayout {
 
-  private final DateiVersionDao dateiVersionDao;
   private final VersionsverwaltungService versionsverwaltungService;
-  private final MainView mainView;
   TreeGrid<DateiVersion> grid;
+  Button dateiBearbeitenButton;
+  Button compareDateienButton;
 
 
-  public TabellenView(DateiVersionDao dateiVersionDao,
-                      VersionsverwaltungService versionsverwaltungService, MainView mainView) {
-    this.dateiVersionDao = dateiVersionDao;
+  public TabellenView(final VersionsverwaltungService versionsverwaltungService) {
     this.versionsverwaltungService = versionsverwaltungService;
-    this.mainView = mainView;
     setSizeFull();
     configureGrid();
     HorizontalLayout toolbar = getToolbar();
@@ -47,11 +45,8 @@ public class TabellenView extends VerticalLayout {
     grid.setSelectionMode(Grid.SelectionMode.MULTI);
     grid.addClassNames("dateiversion-grid");
     grid.asMultiSelect().addValueChangeListener(e -> {
-      if (e.getValue().size() == 1) {
-        editDateiVersion(e.getValue().iterator().next());
-      } else {
-        mainView.closeEditor();
-      }
+      dateiBearbeitenButton.setEnabled(grid.getSelectedItems().size() == 1);
+      compareDateienButton.setEnabled(grid.getSelectedItems().size() == 2);
     });
     grid.addComponentColumn(dateiVersion -> {
       final Image image = new Image();
@@ -73,11 +68,11 @@ public class TabellenView extends VerticalLayout {
         image.setSrc("java-file.png");
         image.setAlt("java");
         return image;
-    } else if ("xml".equals(dateiVersion.getDateityp())) {
+      } else if ("xml".equals(dateiVersion.getDateityp())) {
         image.setSrc("xml-file.png");
         image.setAlt("xml");
         return image;
-    }
+      }
       return new Label(dateiVersion.getDateityp());
     }).setHeader("Typ").setWidth("50px").setAutoWidth(false).setSortable(true);
     grid.addHierarchyColumn(DateiVersion::getDateiname).setHeader("Dateiname").setAutoWidth(true)
@@ -107,16 +102,6 @@ public class TabellenView extends VerticalLayout {
     span.setText(Boolean.TRUE.equals(gesperrt) ? "Gesperrt" : "Verfügbar");
   };
 
-  private void editDateiVersion(DateiVersion value) {
-    if (value == null) {
-      mainView.closeEditor();
-    } else {
-      mainView.getDateiVersionEditPanel().setDateiVersion(value);
-      mainView.getDateiVersionEditPanel().setVisible(true);
-      addClassName("editing");
-    }
-  }
-
 
   private HorizontalLayout getToolbar() {
     final TextField filterText = new TextField();
@@ -129,19 +114,30 @@ public class TabellenView extends VerticalLayout {
     filterText.addValueChangeListener(
         e -> updateList(filterText.getValue()));
 
-    final Button compareDateien = new Button("Vergleichen");
-    compareDateien.addClickListener(e -> {
+    compareDateienButton = new Button("Vergleichen");
+    compareDateienButton.setEnabled(grid.getSelectedItems().size() == 2);
+    compareDateienButton.addClickListener(e -> {
       if (grid.getSelectedItems().size() == 2) {
         List<DateiVersion> ausgewaehlteDateien = new ArrayList<>(grid.getSelectedItems());
         new CompareDialog(ausgewaehlteDateien.get(0), ausgewaehlteDateien.get(1)).open();
       }
     });
 
-    final Button addDateiVersionButton = new Button("Datei hinzufügen");
-    addDateiVersionButton.addClickListener(e -> addDateiVersion());
+    final Button addNewDateiButton = new Button("Datei hinzufügen");
+    addNewDateiButton.addClickListener(e -> addDateiVersion());
+
+    dateiBearbeitenButton = new Button("Bearbeiten");
+    dateiBearbeitenButton.setEnabled(grid.getSelectedItems().size() == 1);
+    dateiBearbeitenButton.addClickListener(e -> {
+      Optional<DateiVersion> ausgewaehlteDatei = grid.getSelectedItems().stream().findFirst();
+      final BearbeitenDialog bearbeitenDialog =
+          new BearbeitenDialog(ausgewaehlteDatei.get(), this, versionsverwaltungService);
+      bearbeitenDialog.open();
+    });
 
     final HorizontalLayout toolbar =
-        new HorizontalLayout(filterText, compareDateien, addDateiVersionButton);
+        new HorizontalLayout(filterText, compareDateienButton, dateiBearbeitenButton,
+            addNewDateiButton);
     toolbar.setJustifyContentMode(JustifyContentMode.BETWEEN);
     toolbar.setWidthFull();
     toolbar.addClassName("toolbar");
@@ -149,10 +145,9 @@ public class TabellenView extends VerticalLayout {
   }
 
   private void addDateiVersion() {
-    grid.asMultiSelect().clear();
     final DateiVersion dateiVersion = new DateiVersion();
     dateiVersion.setErstelltAm(new Date());
-    editDateiVersion(dateiVersion);
+    new BearbeitenDialog(dateiVersion, this, versionsverwaltungService).open();
   }
 
   public void updateList(final String searchTerm) {
