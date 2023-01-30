@@ -17,7 +17,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringBootTest
 public class VersionsverwaltungServiceTest {
 
-  public static final String DATEINAME = "Dateiname";
+  public static final String DATEINAME_VALID = "Dateiname";
+  public static final String DATEINAME_INVALID = "Invalider Dateiname";
   public static final byte[] FILE = null;
   public static final int VERSION_ROOT = 0;
   public static final int VERSION_CHILD = 1;
@@ -37,40 +38,63 @@ public class VersionsverwaltungServiceTest {
   }
 
   @Test
-  public void test_findAllRootDateien() {
+  public void test_findAllRootDateien_ValidDateiname() {
     final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionRoot();
     Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
-    Assertions.assertThat(versionsverwaltungService.findAllRootDateien(DATEINAME))
+    Assertions.assertThat(versionsverwaltungService.findAllRootDateien(DATEINAME_VALID))
         .isEqualTo(dateiVersionList);
   }
 
   @Test
-  public void test_findAllChildDateien() {
+  public void test_findAllRootDateien_InvalidDateiname() {
+    final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionRoot();
+    Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
+    Assertions.assertThat(versionsverwaltungService.findAllRootDateien(DATEINAME_INVALID))
+        .isEqualTo(Collections.emptyList());
+  }
+
+  @Test
+  public void test_findAllChildDateien_ValidDateiname() {
     final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionChild();
     Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
-    Assertions.assertThat(versionsverwaltungService.findAllChildDateien(DATEINAME))
+    Assertions.assertThat(versionsverwaltungService.findAllChildDateien(DATEINAME_VALID))
         .isEqualTo(dateiVersionList);
   }
 
   @Test
-  public void test_findHoechsteVersionFuerDateiname() {
+  public void test_findAllChildDateien_InvalidDateiname() {
+    final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionChild();
+    Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
+    Assertions.assertThat(versionsverwaltungService.findAllChildDateien(DATEINAME_INVALID))
+        .isEqualTo(Collections.emptyList());
+  }
+
+  @Test
+  public void test_findHoechsteVersionFuerDateiname_ValidDateiname() {
     final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionRoot();
     Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
-    Assertions.assertThat(versionsverwaltungService.findHoechsteVersionFuerDateiname(DATEINAME))
+    Assertions.assertThat(
+            versionsverwaltungService.findHoechsteVersionFuerDateiname(DATEINAME_VALID))
         .isEqualTo(VERSION_ROOT);
   }
 
+  @Test
+  public void test_findHoechsteVersionFuerDateiname_InvalidDateiname() {
+    final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionRoot();
+    Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
+    Assertions.assertThat(
+        versionsverwaltungService.findHoechsteVersionFuerDateiname(DATEINAME_INVALID)).isEqualTo(0);
+  }
+
   private List<DateiVersion> createSingletonListOfDateiVersionRoot() {
-    final DateiVersion dateiVersion = new DateiVersion(DATEINAME, FILE, VERSION_ROOT,
-        ZULETZT_BEARBEITET,
-        ERSTELLT_AM, KOMMENTAR, SPERRE, DATEITYP);
+    final DateiVersion dateiVersion = new DateiVersion(DATEINAME_VALID, FILE, VERSION_ROOT,
+        ZULETZT_BEARBEITET, ERSTELLT_AM, KOMMENTAR, SPERRE, DATEITYP);
     return Collections.singletonList(dateiVersion);
   }
 
   private List<DateiVersion> createSingletonListOfDateiVersionChild() {
-    final DateiVersion dateiVersion = new DateiVersion(DATEINAME, FILE, VERSION_CHILD,
-        ZULETZT_BEARBEITET,
-        ERSTELLT_AM, KOMMENTAR, SPERRE, DATEITYP);
+    final DateiVersion dateiVersion = new DateiVersion(DATEINAME_VALID, FILE, VERSION_CHILD,
+        ZULETZT_BEARBEITET, ERSTELLT_AM, KOMMENTAR, SPERRE, DATEITYP);
     return Collections.singletonList(dateiVersion);
   }
 }
