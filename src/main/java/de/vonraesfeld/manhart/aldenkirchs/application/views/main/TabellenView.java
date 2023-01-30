@@ -5,6 +5,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -49,23 +50,26 @@ public class TabellenView extends VerticalLayout {
       compareDateienButton.setEnabled(grid.getSelectedItems().size() == 2);
     });
     grid.addComponentColumn(dateiVersion -> {
+      if (dateiVersion.getVersion() > 0) {
+        return new Label("");
+      }
       final Image image = new Image();
-      image.setWidth("30px");
-      image.setHeight("30px");
+      image.setWidth("40px");
+      image.setHeight("40px");
       if ("txt".equals(dateiVersion.getDateityp())) {
-        image.setSrc("txt-file.png");
+        image.setSrc("txt_icon.svg");
         image.setAlt("txt");
         return image;
       } else if ("pdf".equals(dateiVersion.getDateityp())) {
-        image.setSrc("pdf-file.png");
+        image.setSrc("pdf_icon.svg");
         image.setAlt("pdf");
         return image;
       } else if ("json".equals(dateiVersion.getDateityp())) {
-        image.setSrc("json-file.png");
+        image.setSrc("json_icon.png");
         image.setAlt("json");
         return image;
       } else if ("java".equals(dateiVersion.getDateityp())) {
-        image.setSrc("java-file.png");
+        image.setSrc("java_icon.svg");
         image.setAlt("java");
         return image;
       } else if ("xml".equals(dateiVersion.getDateityp())) {
@@ -77,31 +81,44 @@ public class TabellenView extends VerticalLayout {
     }).setHeader("Typ").setWidth("50px").setAutoWidth(false).setSortable(true);
     grid.addHierarchyColumn(DateiVersion::getDateiname).setHeader("Dateiname").setAutoWidth(true)
         .setSortable(true);
-    grid.addColumn(DateiVersion::getVersion).setHeader("Version").setWidth("2em").setSortable(true);
-    grid.addColumn(createGesperrtSpalte()).setHeader("Status").setAutoWidth(true).setSortable(true);
+    grid.addColumn(DateiVersion::getVersion).setHeader("Version").setSortable(true);
+    grid.addColumn(createGesperrtSpalte()).setHeader("Status").setSortable(true);
     grid.addColumn(DateiVersion::getKommentar).setHeader("Kommentar").setAutoWidth(true)
         .setSortable(false);
-    grid.addColumn(DateiVersion::getZuletztBearbeitet).setHeader("Zuletzt Bearbeitet")
-        .setAutoWidth(true).setSortable(true);
+    grid.addColumn(createTagSpalte()).setHeader("Tags").setSortable(false);
     grid.addColumn(DateiVersion::getErstelltAm).setHeader("Erstellt am").setAutoWidth(true)
         .setSortable(true);
     grid.getColumns().forEach(col -> col.setAutoWidth(true));
     updateList(null);
   }
 
-  private ComponentRenderer<Span, DateiVersion> createGesperrtSpalte() {
-    return new ComponentRenderer<>(Span::new, statusComponentUpdater);
+  private ComponentRenderer<Span, DateiVersion> createTagSpalte() {
+    final SerializableBiConsumer<Span, DateiVersion> componentUpdater = (
+        span, dateiVersion) -> {
+      final FlexLayout flexLayout = new FlexLayout();
+      dateiVersion.getTags().forEach(tag -> {
+        final Span tagSpan = new Span();
+        tagSpan.getElement().setAttribute("theme", "badge");
+        tagSpan.addClassName("tagSpan");
+        tagSpan.setText(tag);
+        flexLayout.add(tagSpan);
+      });
+      span.add(flexLayout);
+    };
+    return new ComponentRenderer<>(Span::new, componentUpdater);
   }
 
-  private SerializableBiConsumer<Span, DateiVersion> statusComponentUpdater = (
-      span, dateiVersion) -> {
-    Boolean gesperrt = dateiVersion.getGesperrt();
-    String theme = String.format("badge %s",
-        Boolean.TRUE.equals(gesperrt) ? "error" : "success");
-    span.getElement().setAttribute("theme", theme);
-    span.setText(Boolean.TRUE.equals(gesperrt) ? "Gesperrt" : "Verfügbar");
-  };
-
+  private ComponentRenderer<Span, DateiVersion> createGesperrtSpalte() {
+    final SerializableBiConsumer<Span, DateiVersion> componentUpdater = (
+        span, dateiVersion) -> {
+      Boolean gesperrt = dateiVersion.getGesperrt();
+      String theme = String.format("badge %s",
+          Boolean.TRUE.equals(gesperrt) ? "error" : "success");
+      span.getElement().setAttribute("theme", theme);
+      span.setText(Boolean.TRUE.equals(gesperrt) ? "Gesperrt" : "Verfügbar");
+    };
+    return new ComponentRenderer<>(Span::new, componentUpdater);
+  }
 
   private HorizontalLayout getToolbar() {
     final TextField filterText = new TextField();

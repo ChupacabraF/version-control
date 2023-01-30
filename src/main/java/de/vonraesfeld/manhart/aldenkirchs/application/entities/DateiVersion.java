@@ -1,7 +1,11 @@
 package de.vonraesfeld.manhart.aldenkirchs.application.entities;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
@@ -13,19 +17,19 @@ public class DateiVersion extends AbstractEntity {
   @Lob
   byte[] file;
   int version;
-  Date zuletztBearbeitet;
   Date erstelltAm;
   String kommentar;
   Boolean gesperrt = Boolean.FALSE;
   String dateityp;
+  @ElementCollection(fetch = FetchType.EAGER)
+  Set<String> tags = new HashSet<>();
 
   public DateiVersion(final String dateiname, final byte[] file, final int version,
-      final Date zuletztBearbeitet, final Date erstelltAm, final String kommentar,
-      final Boolean gesperrt, final String dateityp) {
+                      final Date erstelltAm, final String kommentar,
+                      final Boolean gesperrt, final String dateityp) {
     this.dateiname = dateiname;
     this.file = file;
     this.version = version;
-    this.zuletztBearbeitet = zuletztBearbeitet;
     this.erstelltAm = erstelltAm;
     this.kommentar = kommentar;
     this.gesperrt = gesperrt;
@@ -76,14 +80,6 @@ public class DateiVersion extends AbstractEntity {
     this.version = version;
   }
 
-  public Date getZuletztBearbeitet() {
-    return zuletztBearbeitet;
-  }
-
-  public void setZuletztBearbeitet(final Date zuletztBearbeitet) {
-    this.zuletztBearbeitet = zuletztBearbeitet;
-  }
-
   public Date getErstelltAm() {
     return erstelltAm;
   }
@@ -98,5 +94,13 @@ public class DateiVersion extends AbstractEntity {
 
   public void setKommentar(final String kommentar) {
     this.kommentar = kommentar;
+  }
+
+  public Set<String> getTags() {
+    return tags;
+  }
+
+  public void setTags(Set<String> tags) {
+    this.tags = tags;
   }
 }

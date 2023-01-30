@@ -22,7 +22,6 @@ public class VersionsverwaltungServiceTest {
   public static final byte[] FILE = null;
   public static final int VERSION_ROOT = 0;
   public static final int VERSION_CHILD = 1;
-  public static final Date ZULETZT_BEARBEITET = new Date();
   public static final Date ERSTELLT_AM = new Date();
   public static final String KOMMENTAR = "Kommentar";
   public static final Boolean SPERRE = Boolean.TRUE;
@@ -87,14 +86,16 @@ public class VersionsverwaltungServiceTest {
   }
 
   private List<DateiVersion> createSingletonListOfDateiVersionRoot() {
-    final DateiVersion dateiVersion = new DateiVersion(DATEINAME_VALID, FILE, VERSION_ROOT,
-        ZULETZT_BEARBEITET, ERSTELLT_AM, KOMMENTAR, SPERRE, DATEITYP);
+    final DateiVersion dateiVersion =
+        new DateiVersion(DATEINAME_VALID, FILE, VERSION_ROOT, ERSTELLT_AM, KOMMENTAR, SPERRE,
+            DATEITYP);
     return Collections.singletonList(dateiVersion);
   }
 
   private List<DateiVersion> createSingletonListOfDateiVersionChild() {
-    final DateiVersion dateiVersion = new DateiVersion(DATEINAME_VALID, FILE, VERSION_CHILD,
-        ZULETZT_BEARBEITET, ERSTELLT_AM, KOMMENTAR, SPERRE, DATEITYP);
+    final DateiVersion dateiVersion =
+        new DateiVersion(DATEINAME_VALID, FILE, VERSION_CHILD, ERSTELLT_AM, KOMMENTAR, SPERRE,
+            DATEITYP);
     return Collections.singletonList(dateiVersion);
   }
 }

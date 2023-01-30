@@ -4,8 +4,10 @@ import de.vonraesfeld.manhart.aldenkirchs.application.daos.DateiVersionDao;
 import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,13 @@ public class VersionsverwaltungService {
 
   public VersionsverwaltungService(final DateiVersionDao dateiVersionDao) {
     this.dateiVersionDao = dateiVersionDao;
+  }
+
+  public Set<String> findAllTags() {
+    final HashSet<String> resultSet = new HashSet<>();
+    final List<DateiVersion> alleDateiVersionen = dateiVersionDao.findAll();
+    alleDateiVersionen.forEach(datei -> resultSet.addAll(datei.getTags()));
+    return resultSet;
   }
 
   public List<DateiVersion> findAllRootDateien(final String searchTerm) {
