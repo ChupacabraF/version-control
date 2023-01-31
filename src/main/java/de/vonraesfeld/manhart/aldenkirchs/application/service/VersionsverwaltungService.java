@@ -56,7 +56,19 @@ public class VersionsverwaltungService {
         .collect(Collectors.toList());
   }
 
-  public int findHoechsteVersionFuerDateiname(final String dateiname) {
+  public void entferneAlleSperrenFuerDateiname(final String dateiname) {
+    final List<DateiVersion> alle = dateiVersionDao.findAll();
+    if (CollectionUtils.isEmpty(alle) || StringUtils.isBlank(dateiname)) {
+      return;
+    }
+    alle.stream().filter(datei -> datei.getDateiname().equals(dateiname))
+        .forEach(datei -> {
+          datei.setGesperrt(Boolean.FALSE);
+          dateiVersionDao.save(datei);
+        });
+  }
+
+  public int findeHoechsteVersionFuerDateiname(final String dateiname) {
     final List<DateiVersion> alle = dateiVersionDao.findAll();
     if (CollectionUtils.isEmpty(alle) || StringUtils.isBlank(dateiname)) {
       return 0;

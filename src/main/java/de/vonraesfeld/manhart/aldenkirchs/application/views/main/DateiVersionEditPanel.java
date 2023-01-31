@@ -111,7 +111,7 @@ public class DateiVersionEditPanel extends FormLayout {
         e.printStackTrace();
       }
       if (!versionsverwaltungService.findAllRootDateien(fileName).isEmpty()) {
-        version.setValue(versionsverwaltungService.findHoechsteVersionFuerDateiname(fileName) + 1);
+        version.setValue(versionsverwaltungService.findeHoechsteVersionFuerDateiname(fileName) + 1);
       }
     });
     dateiUpload.setClassName("dateiUpload");
@@ -152,6 +152,7 @@ public class DateiVersionEditPanel extends FormLayout {
   public boolean validateAndSave() {
     try {
       binder.writeBean(dateiVersion);
+      versionsverwaltungService.entferneAlleSperrenFuerDateiname(dateiVersion.getDateiname());
       versionsverwaltungService.saveDateiVersion(dateiVersion);
       return true;
     } catch (final ValidationException e) {

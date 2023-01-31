@@ -73,7 +73,7 @@ public class VersionsverwaltungServiceTest {
     final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionRoot();
     Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
     Assertions.assertThat(
-            versionsverwaltungService.findHoechsteVersionFuerDateiname(DATEINAME_VALID))
+            versionsverwaltungService.findeHoechsteVersionFuerDateiname(DATEINAME_VALID))
         .isEqualTo(VERSION_ROOT);
   }
 
@@ -82,7 +82,8 @@ public class VersionsverwaltungServiceTest {
     final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionRoot();
     Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
     Assertions.assertThat(
-        versionsverwaltungService.findHoechsteVersionFuerDateiname(DATEINAME_INVALID)).isEqualTo(0);
+            versionsverwaltungService.findeHoechsteVersionFuerDateiname(DATEINAME_INVALID))
+        .isEqualTo(0);
   }
 
   private List<DateiVersion> createSingletonListOfDateiVersionRoot() {
