@@ -53,6 +53,14 @@ public class VersionsverwaltungServiceTest {
   }
 
   @Test
+  public void test_findAllRootDateien_Null() {
+    final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionRoot();
+    Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
+    Assertions.assertThat(versionsverwaltungService.findAllRootDateien(null))
+        .isEqualTo(dateiVersionList);
+  }
+
+  @Test
   public void test_findAllChildDateien_ValidDateiname() {
     final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionChild();
     Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
@@ -65,6 +73,14 @@ public class VersionsverwaltungServiceTest {
     final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionChild();
     Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
     Assertions.assertThat(versionsverwaltungService.findAllChildDateien(DATEINAME_INVALID))
+        .isEqualTo(Collections.emptyList());
+  }
+
+  @Test
+  public void test_findAllChildDateien_Null() {
+    final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionChild();
+    Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
+    Assertions.assertThat(versionsverwaltungService.findAllChildDateien(null))
         .isEqualTo(Collections.emptyList());
   }
 
@@ -83,6 +99,15 @@ public class VersionsverwaltungServiceTest {
     Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
     Assertions.assertThat(
             versionsverwaltungService.findeHoechsteVersionFuerDateiname(DATEINAME_INVALID))
+        .isEqualTo(0);
+  }
+
+  @Test
+  public void test_findHoechsteVersionFuerDateiname_Null() {
+    final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionRoot();
+    Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
+    Assertions.assertThat(
+            versionsverwaltungService.findeHoechsteVersionFuerDateiname(null))
         .isEqualTo(0);
   }
 
