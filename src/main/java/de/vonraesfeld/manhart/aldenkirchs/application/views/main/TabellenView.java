@@ -11,11 +11,15 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializableBiConsumer;
+import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.spring.annotation.UIScope;
 import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;
 import de.vonraesfeld.manhart.aldenkirchs.application.service.VersionsverwaltungService;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,8 +90,11 @@ public class TabellenView extends VerticalLayout {
     grid.addColumn(DateiVersion::getKommentar).setHeader("Kommentar").setAutoWidth(true)
         .setSortable(false);
     grid.addColumn(createTagSpalte()).setHeader("Tags").setSortable(false);
-    grid.addColumn(DateiVersion::getErstelltAm).setHeader("Erstellt am").setAutoWidth(true)
-        .setSortable(true);
+    grid.addColumn(new LocalDateTimeRenderer<>(
+            (ValueProvider<DateiVersion, LocalDateTime>) dateiVersion -> LocalDateTime.ofInstant(
+                dateiVersion.getErstelltAm().toInstant(),
+                ZoneId.systemDefault()), "dd.MM.yyyy HH:mm"))
+        .setHeader("Erstellt am").setAutoWidth(true);
     grid.getColumns().forEach(col -> col.setAutoWidth(true));
     updateList(null);
   }

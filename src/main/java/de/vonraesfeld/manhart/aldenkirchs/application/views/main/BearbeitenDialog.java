@@ -7,6 +7,8 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import de.vonraesfeld.manhart.aldenkirchs.application.entities.DateiVersion;
 import de.vonraesfeld.manhart.aldenkirchs.application.service.VersionsverwaltungService;
+import org.hibernate.annotations.common.util.impl.LoggerFactory;
+import org.jboss.logging.Logger;
 
 public class BearbeitenDialog extends Dialog {
 
@@ -14,6 +16,8 @@ public class BearbeitenDialog extends Dialog {
   private final DateiVersion dateiVersion;
   private final TabellenView tabellenView;
   private final VersionsverwaltungService versionsverwaltungService;
+
+  public static final Logger LOGGER = LoggerFactory.logger(BearbeitenDialog.class);
 
   public BearbeitenDialog(DateiVersion dateiVersion, TabellenView tabellenView,
                           VersionsverwaltungService versionsverwaltungService) {
@@ -44,10 +48,12 @@ public class BearbeitenDialog extends Dialog {
   private void delete() {
     versionsverwaltungService.deleteDateiVersion(dateiVersion);
     tabellenView.updateList(null);
+
     final Notification notification = Notification.show("Datei wurde gelöscht.");
     notification.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
     notification.setPosition(Notification.Position.BOTTOM_CENTER);
     close();
+    LOGGER.info("Datei gelöscht");
   }
 
   private void validateAndSave() {
