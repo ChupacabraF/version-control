@@ -7,7 +7,11 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.UIScope;
 import de.vonraesfeld.manhart.aldenkirchs.application.service.VersionsverwaltungService;
+import org.hibernate.annotations.common.util.impl.LoggerFactory;
+import org.jboss.logging.Logger;
 import org.springframework.stereotype.Component;
+
+import static de.vonraesfeld.manhart.aldenkirchs.application.Application.LOGGER;
 
 @PageTitle("Versionsverwaltung")
 @Route(value = "")
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Component;
 public class MainView extends VerticalLayout {
 
   public MainView(final VersionsverwaltungService versionsverwaltungService) {
+    LOGGER.log(Logger.Level.INFO, "MainView initialized.");
     setSizeFull();
     setAlignItems(Alignment.CENTER);
 
@@ -24,6 +29,7 @@ public class MainView extends VerticalLayout {
     final TabellenView dateiVersionTabelle =
         new TabellenView(versionsverwaltungService);
     tableLayout.add(dateiVersionTabelle);
+    LOGGER.log(Logger.Level.INFO, "TabellenView, tableLayout created.");
 
     final H1 ueberschrift = new H1("Versionsverwaltung");
 

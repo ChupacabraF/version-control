@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
+import org.jboss.logging.Logger;
+
+import static de.vonraesfeld.manhart.aldenkirchs.application.Application.LOGGER;
 
 public class DateiVersionEditPanel extends FormLayout {
 
@@ -99,23 +102,23 @@ public class DateiVersionEditPanel extends FormLayout {
 
   private void createDateiUploadFeld() {
     final MemoryBuffer memoryBuffer = new MemoryBuffer();
-    dateiUpload = new Upload(memoryBuffer);
-    dateiUpload.addSucceededListener(event -> {
-      final String fileName = memoryBuffer.getFileName();
-      dateiVersion.setDateiname(fileName);
-      dateiVersion.setDateityp(getFileExtension(fileName));
-      try {
-        final byte[] bytes = IOUtils.toByteArray(memoryBuffer.getInputStream());
-        dateiVersion.setFile(bytes);
-      } catch (final Exception e) {
-        e.printStackTrace();
-      }
-      if (!versionsverwaltungService.findAllRootDateien(fileName).isEmpty()) {
-        version.setValue(versionsverwaltungService.findeHoechsteVersionFuerDateiname(fileName) + 1);
-      }
-    });
-    dateiUpload.setClassName("dateiUpload");
-  }
+      dateiUpload = new Upload(memoryBuffer);
+      dateiUpload.addSucceededListener(event -> {
+        final String fileName = memoryBuffer.getFileName();
+        dateiVersion.setDateiname(fileName);
+        dateiVersion.setDateityp(getFileExtension(fileName));
+        try {
+          final byte[] bytes = IOUtils.toByteArray(memoryBuffer.getInputStream());
+          dateiVersion.setFile(bytes);
+        } catch (final Exception e) {
+          e.printStackTrace();
+        }
+        if (!versionsverwaltungService.findAllRootDateien(fileName).isEmpty()) {
+          version.setValue(versionsverwaltungService.findeHoechsteVersionFuerDateiname(fileName) + 1);
+        }
+      });
+      dateiUpload.setClassName("dateiUpload");
+    }
 
   private String getFileExtension(final String filename) {
     final int lastIndexOf = filename.lastIndexOf(".");
@@ -150,15 +153,16 @@ public class DateiVersionEditPanel extends FormLayout {
   }
 
   public boolean validateAndSave() {
-    try {
-      binder.writeBean(dateiVersion);
-      versionsverwaltungService.entferneAlleSperrenFuerDateiname(dateiVersion.getDateiname());
-      versionsverwaltungService.saveDateiVersion(dateiVersion);
-      return true;
-    } catch (final ValidationException e) {
-      e.printStackTrace();
-      return false;
-    }
+    System.out.println(dateiVersion.getDateiname());
+    if(dateiVersion.getDateiname() != null) {
+      try {
+        binder.writeBean(dateiVersion);
+        versionsverwaltungService.entferneAlleSperrenFuerDateiname(dateiVersion.getDateiname());
+        versionsverwaltungService.saveDateiVersion(dateiVersion);
+        return true;
+      } catch (final ValidationException e) {
+        LOGGER.log(Logger.Level.ERROR, e.getMessage());
+        return false;
+      }
+    } else  return false ;}
   }
-
-}
