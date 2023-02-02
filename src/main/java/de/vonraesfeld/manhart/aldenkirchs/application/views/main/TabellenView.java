@@ -57,19 +57,19 @@ public class TabellenView extends VerticalLayout {
       image.setWidth("40px");
       image.setHeight("40px");
       if ("txt".equals(dateiVersion.getDateityp())) {
-        image.setSrc("txt_icon.svg");
+        image.setSrc("txt-file.png");
         image.setAlt("txt");
         return image;
       } else if ("pdf".equals(dateiVersion.getDateityp())) {
-        image.setSrc("pdf_icon.svg");
+        image.setSrc("pdf-file.png");
         image.setAlt("pdf");
         return image;
       } else if ("json".equals(dateiVersion.getDateityp())) {
-        image.setSrc("json_icon.png");
+        image.setSrc("json-file.png");
         image.setAlt("json");
         return image;
       } else if ("java".equals(dateiVersion.getDateityp())) {
-        image.setSrc("java_icon.svg");
+        image.setSrc("java-file.png");
         image.setAlt("java");
         return image;
       } else if ("xml".equals(dateiVersion.getDateityp())) {
