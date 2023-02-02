@@ -17,10 +17,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringBootTest
 public class VersionsverwaltungServiceTest {
 
-  public static final String DATEINAME_VALID = "Dateiname";
+  public static final String DATEINAME_VALID_1 = "Dateiname 1";
+  public static final String DATEINAME_VALID_2 = "Dateiname 2";
+  public static final String DATEINAME_VALID_3 = "Dateiname 3";
   public static final String DATEINAME_INVALID = "Invalider Dateiname";
   public static final byte[] FILE = null;
-  public static final int VERSION_ROOT = 0;
+  public static final int VERSION_ROOT_1 = 0;
+  public static final int VERSION_ROOT_2 = 1;
+  public static final int VERSION_ROOT_3 = 2;
   public static final int VERSION_CHILD = 1;
   public static final Date ERSTELLT_AM = new Date();
   public static final String KOMMENTAR = "Kommentar";
@@ -40,8 +44,20 @@ public class VersionsverwaltungServiceTest {
   public void test_findAllRootDateien_ValidDateiname() {
     final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionRoot();
     Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
-    Assertions.assertThat(versionsverwaltungService.findAllRootDateien(DATEINAME_VALID))
+    Assertions.assertThat(versionsverwaltungService.findAllRootDateien(DATEINAME_VALID_1))
         .isEqualTo(dateiVersionList);
+  }
+
+  @Test
+  public void test_findAllRootDateien_ValidDateinamenOf1() {
+    final List<DateiVersion> dateiVersionList = createListOfDateiVersionRootSame();
+    Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
+    Assertions.assertThat(versionsverwaltungService.findAllRootDateien(DATEINAME_VALID_1).size())
+        .isEqualTo(1);
+    Assertions.assertThat(versionsverwaltungService.findAllRootDateien(DATEINAME_VALID_2).size())
+        .isEqualTo(1);
+    Assertions.assertThat(versionsverwaltungService.findAllRootDateien(DATEINAME_VALID_3).size())
+        .isEqualTo(1);
   }
 
   @Test
@@ -64,8 +80,20 @@ public class VersionsverwaltungServiceTest {
   public void test_findAllChildDateien_ValidDateiname() {
     final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionChild();
     Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
-    Assertions.assertThat(versionsverwaltungService.findAllChildDateien(DATEINAME_VALID))
+    Assertions.assertThat(versionsverwaltungService.findAllChildDateien(DATEINAME_VALID_1))
         .isEqualTo(dateiVersionList);
+  }
+
+  @Test
+  public void test_findAllChildDateien_ValidDateinameOf1() {
+    final List<DateiVersion> dateiVersionList = createListOfDateiVersionChild();
+    Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
+    Assertions.assertThat(versionsverwaltungService.findAllChildDateien(DATEINAME_VALID_1).size())
+        .isEqualTo(1);
+    Assertions.assertThat(versionsverwaltungService.findAllChildDateien(DATEINAME_VALID_2).size())
+        .isEqualTo(1);
+    Assertions.assertThat(versionsverwaltungService.findAllChildDateien(DATEINAME_VALID_3).size())
+        .isEqualTo(1);
   }
 
   @Test
@@ -89,8 +117,25 @@ public class VersionsverwaltungServiceTest {
     final List<DateiVersion> dateiVersionList = createSingletonListOfDateiVersionRoot();
     Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
     Assertions.assertThat(
-            versionsverwaltungService.findeHoechsteVersionFuerDateiname(DATEINAME_VALID))
-        .isEqualTo(VERSION_ROOT);
+            versionsverwaltungService.findeHoechsteVersionFuerDateiname(DATEINAME_VALID_1))
+        .isEqualTo(VERSION_ROOT_1);
+  }
+
+  @Test
+  public void test_findHoechsteVersionFuerDateiname_ValidDateinamenOf1() {
+    final List<DateiVersion> dateiVersionList = createListOfDateiVersionRootDifferent();
+    Mockito.when(dateiVersionDao.findAll()).thenReturn(dateiVersionList);
+    Assertions.assertThat(
+            versionsverwaltungService.findeHoechsteVersionFuerDateiname(DATEINAME_VALID_1))
+        .isEqualTo(VERSION_ROOT_1);
+
+    Assertions.assertThat(
+            versionsverwaltungService.findeHoechsteVersionFuerDateiname(DATEINAME_VALID_2))
+        .isEqualTo(VERSION_ROOT_2);
+
+    Assertions.assertThat(
+            versionsverwaltungService.findeHoechsteVersionFuerDateiname(DATEINAME_VALID_3))
+        .isEqualTo(VERSION_ROOT_3);
   }
 
   @Test
@@ -113,15 +158,54 @@ public class VersionsverwaltungServiceTest {
 
   private List<DateiVersion> createSingletonListOfDateiVersionRoot() {
     final DateiVersion dateiVersion =
-        new DateiVersion(DATEINAME_VALID, FILE, VERSION_ROOT, ERSTELLT_AM, KOMMENTAR, SPERRE,
+        new DateiVersion(DATEINAME_VALID_1, FILE, VERSION_ROOT_1, ERSTELLT_AM, KOMMENTAR, SPERRE,
             DATEITYP);
     return Collections.singletonList(dateiVersion);
   }
 
   private List<DateiVersion> createSingletonListOfDateiVersionChild() {
     final DateiVersion dateiVersion =
-        new DateiVersion(DATEINAME_VALID, FILE, VERSION_CHILD, ERSTELLT_AM, KOMMENTAR, SPERRE,
+        new DateiVersion(DATEINAME_VALID_1, FILE, VERSION_CHILD, ERSTELLT_AM, KOMMENTAR, SPERRE,
             DATEITYP);
     return Collections.singletonList(dateiVersion);
+  }
+
+  private List<DateiVersion> createListOfDateiVersionRootSame() {
+    final DateiVersion dateiVersion1 =
+        new DateiVersion(DATEINAME_VALID_1, FILE, VERSION_ROOT_1, ERSTELLT_AM, KOMMENTAR, SPERRE,
+            DATEITYP);
+    final DateiVersion dateiVersion2 =
+        new DateiVersion(DATEINAME_VALID_2, FILE, VERSION_ROOT_1, ERSTELLT_AM, KOMMENTAR, SPERRE,
+            DATEITYP);
+    final DateiVersion dateiVersion3 =
+        new DateiVersion(DATEINAME_VALID_3, FILE, VERSION_ROOT_1, ERSTELLT_AM, KOMMENTAR, SPERRE,
+            DATEITYP);
+    return List.of(dateiVersion1, dateiVersion2, dateiVersion3);
+  }
+
+  private List<DateiVersion> createListOfDateiVersionRootDifferent() {
+    final DateiVersion dateiVersion1 =
+        new DateiVersion(DATEINAME_VALID_1, FILE, VERSION_ROOT_1, ERSTELLT_AM, KOMMENTAR, SPERRE,
+            DATEITYP);
+    final DateiVersion dateiVersion2 =
+        new DateiVersion(DATEINAME_VALID_2, FILE, VERSION_ROOT_2, ERSTELLT_AM, KOMMENTAR, SPERRE,
+            DATEITYP);
+    final DateiVersion dateiVersion3 =
+        new DateiVersion(DATEINAME_VALID_3, FILE, VERSION_ROOT_3, ERSTELLT_AM, KOMMENTAR, SPERRE,
+            DATEITYP);
+    return List.of(dateiVersion1, dateiVersion2, dateiVersion3);
+  }
+
+  private List<DateiVersion> createListOfDateiVersionChild() {
+    final DateiVersion dateiVersion1 =
+        new DateiVersion(DATEINAME_VALID_1, FILE, VERSION_CHILD, ERSTELLT_AM, KOMMENTAR, SPERRE,
+            DATEITYP);
+    final DateiVersion dateiVersion2 =
+        new DateiVersion(DATEINAME_VALID_2, FILE, VERSION_CHILD, ERSTELLT_AM, KOMMENTAR, SPERRE,
+            DATEITYP);
+    final DateiVersion dateiVersion3 =
+        new DateiVersion(DATEINAME_VALID_3, FILE, VERSION_CHILD, ERSTELLT_AM, KOMMENTAR, SPERRE,
+            DATEITYP);
+    return List.of(dateiVersion1, dateiVersion2, dateiVersion3);
   }
 }
